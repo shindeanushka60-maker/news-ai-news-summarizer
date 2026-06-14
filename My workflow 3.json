@@ -1,0 +1,216 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b26824d2-d147-46e0-ae2a-3612dcfacd41",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are an AI News Research Agent.\n\nYour task is to collect, filter, and summarize high-quality news articles from reliable sources related to the following topics:\n\n1. Political News (India + Global)\n2. Technology News (AI, gadgets, startups, software, cybersecurity, innovations, social media updates)\n3. Latest / Breaking News (important trending events worldwide)\n\nInstructions:\n\n- Fetch only recent and relevant articles from trusted news websites and RSS feeds.\n- Avoid fake, clickbait, duplicate, or low-quality news.\n- Prioritize trusted sources such as BBC, Reuters, CNBC, NDTV, Times of India, Indian Express, TechCrunch, Wired, The Verge, Hindustan Times, Economic Times, etc.\n- For each article, provide:\n  - Title\n  - Short summary (3–5 lines in simple English)\n  - Category (Political / Tech / Latest News)\n  - Source name\n  - Publication date & time\n  - Direct article link\n- Filter out repeated news stories.\n- Prioritize trending and important updates.\n- If multiple articles discuss the same topic, merge them into one concise summary.\n- Focus more on impactful, viral, or important stories.\n\nOutput format:\n\nCategory: [Political / Tech / Latest News]\n\nHeadline: [Article Title]\n\nSummary:\n[Short and clear summary]\n\nSource:\n[Website Name]\n\nPublished:\n[Date & Time]\n\nArticle Link:\n[URL]",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "1e7b375b-4892-499b-8eae-99b16820627f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sendTo": "shindeanushka60@gmail.com",
+        "subject": "Daily News Digest",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        736,
+        48
+      ],
+      "id": "ba62664a-4310-4cd7-927b-7b556064d988",
+      "name": "Send a message",
+      "webhookId": "37378ea2-4552-4f69-ad12-28fa9c1ebf41",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "X08ZBS04cPSHWeR9",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to fetch political news",
+        "url": "https://feeds.bbci.co.uk/news/politics/rss.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedReadTool",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        256
+      ],
+      "id": "d03737bb-3756-4836-8bcb-14c1d798bd4b",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to fetch technology news",
+        "url": "https://techcrunch.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedReadTool",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        304
+      ],
+      "id": "9666ac6c-3e72-4899-bf0f-754fc8a943b8",
+      "name": "RSS Read1"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to fetch latest news",
+        "url": "http://feeds.bbci.co.uk/news/world/rss.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedReadTool",
+      "typeVersion": 1.2,
+      "position": [
+        784,
+        304
+      ],
+      "id": "ba36ecfe-bcdd-4c08-bdcd-81a839ac709e",
+      "name": "RSS Read2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        208
+      ],
+      "id": "3ed1a166-2dd5-4a6d-9bca-784aa2863797",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "btwa0WAxWLO8DExC",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e0fd49f7-80ad-4b20-bf42-96fbf912bee4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "37e4f46c0fe4e6846cf7e0ce9ed23f9fd28832c2903b5501b9b7842a48bd3eec"
+  },
+  "nodeGroups": [],
+  "id": "UjYt5EdvzDzGnNQj",
+  "tags": []
+}
